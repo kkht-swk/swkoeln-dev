@@ -1,12 +1,12 @@
 {
     "folders": [
         {
-            "name": "Theme",
-            "path": "../swkoeln"
-        },
-        {
             "name": "Dev",
             "path": "."
+        },
+        {
+            "name": "Theme",
+            "path": "../swkoeln"
         }
     ],
     "extensions": {
