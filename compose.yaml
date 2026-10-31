@@ -1,0 +1,74 @@
+services:
+
+  db:
+    image: mariadb:latest
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Required}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:?Required}
+      MARIADB_USER: ${MARIADB_USER:?Required}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Required}
+
+  wp:
+    depends_on:
+      - db
+    # image: wordpress:6-php8.2-apache
+    image: wp6-xdebug
+    # pull_policy: build
+    build: .
+    volumes:
+      - ./var/html:/var/www/html
+      - ./var/uploads:/var/www/html/wp-content/uploads
+      - ./var/log/debug.log:/var/www/html/wp-content/debug.log
+      - ../swkoeln:/var/www/html/wp-content/themes/swkoeln
+      - ./config/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./config/php/conf.d/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE:?Required}
+      WORDPRESS_DB_USER: ${MARIADB_USER:?Required}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD:?Required}
+
+  adminer:
+    depends_on:
+      - db
+    image: adminer
+    volumes:
+      - ./config/adminer-auto-login.php:/var/www/html/index.php:ro
+    ports:
+      - 8080:8080
+    environment:
+      ADMINER_HOST: db
+      ADMINER_DB: ${MARIADB_DATABASE:?Required}
+      ADMINER_USER: ${MARIADB_USER:?Required}
+      ADMINER_PWD: ${MARIADB_PASSWORD:?Required}
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - 8025:8025
+#      - 1025:1025
+    volumes:
+      - mailpit_data:/var/data
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      TZ: Europe/Berlin
+      MP_DATABASE: /var/data/mailpit.db
+
+volumes:
+  mariadb_data:
+  mailpit_data:

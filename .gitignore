@@ -1,0 +1,9 @@
+# dirs
+/admin/
+/var/
+/tmp*/
+
+# files
+/.env
+
+*old*

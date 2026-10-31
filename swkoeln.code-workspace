@@ -1,0 +1,44 @@
+{
+    "folders": [
+        {
+            "name": "Theme",
+            "path": "../swkoeln"
+        },
+        {
+            "name": "Dev",
+            "path": "."
+        }
+    ],
+    "extensions": {
+        "recommendations": [
+            "xdebug.php-debug"
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Debug WordPress",
+                "type": "php",
+                "request": "launch",
+                "port": 9003,
+                "pathMappings": {
+                    "/var/www/html/wp-content/themes/swkoeln": "${workspaceFolder:Theme}",
+                    "/var/www/html": "${workspaceFolder:Dev}/var/html",
+                }
+            }
+        ]
+    },
+    "settings": {
+        "files.trimTrailingWhitespace": true,
+        "files.trimFinalNewlines": true,
+        "files.insertFinalNewline": true,
+        "intelephense.files.maxSize": 5000000,
+        "intelephense.environment.documentRoot": "../swkoeln-dev/var/html",
+        "intelephense.environment.includePaths": [
+            "../swkoeln-dev/var/html/wp-includes",
+            "../swkoeln-dev/var/html/wp-admin",
+            "../swkoeln-dev/var/html/wp-content/plugins"
+        ]
+    }
+}
